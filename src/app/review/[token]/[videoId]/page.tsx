@@ -54,16 +54,15 @@ export default async function VideoReviewPage({
     })
   }
 
-  // Generate signed URLs for videos
-  for (const video of project.videos ?? []) {
-    const { data } = await supabase.storage
-      .from('videos')
-      .createSignedUrl(video.storage_path, 3600)
-    ;(video as { signed_url?: string | null }).signed_url = data?.signedUrl ?? null
-  }
-
   const videoIndex = (project.videos ?? []).findIndex((v: { id: string }) => v.id === videoId)
   if (videoIndex === -1) notFound()
+
+  // 表示対象の動画のみ署名付きURLを生成（全動画生成から1本に削減）
+  const targetVideo = project.videos[videoIndex]
+  const { data: urlData } = await supabase.storage
+    .from('videos')
+    .createSignedUrl(targetVideo.storage_path, 3600)
+  ;(targetVideo as { signed_url?: string | null }).signed_url = urlData?.signedUrl ?? null
 
   return <ReviewClient project={project} initialVideoIndex={videoIndex} token={token} />
 }
