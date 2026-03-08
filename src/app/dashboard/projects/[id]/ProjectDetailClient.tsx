@@ -331,7 +331,8 @@ export function ProjectDetailClient({ project: initialProject, shareUrl: initial
                 {project.videos.map((video) => (
                   <div
                     key={video.id}
-                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100"
+                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-colors"
+                    onClick={() => window.open(`/review/${project.share_token}/${video.id}`, '_blank')}
                   >
                     {video.signed_url ? (
                       <video
@@ -359,7 +360,7 @@ export function ProjectDetailClient({ project: initialProject, shareUrl: initial
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => copyVideoUrl(video.id)}
+                      onClick={(e) => { e.stopPropagation(); copyVideoUrl(video.id) }}
                       className="text-gray-400 hover:text-blue-600 shrink-0"
                       title="この動画のリンクをコピー"
                     >
@@ -370,7 +371,7 @@ export function ProjectDetailClient({ project: initialProject, shareUrl: initial
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDelete(video.id)}
+                      onClick={(e) => { e.stopPropagation(); handleDelete(video.id) }}
                       disabled={deletingId === video.id}
                       className="text-gray-400 hover:text-red-600 shrink-0"
                     >
