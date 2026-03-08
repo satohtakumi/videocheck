@@ -52,7 +52,7 @@ export function ProjectDetailClient({ project: initialProject, shareUrl: initial
     const files = Array.from(e.target.files ?? [])
     if (!files.length) return
 
-    const remaining = 5 - project.videos.length
+    const remaining = 10 - project.videos.length
     if (files.length > remaining) {
       alert(`あと${remaining}本まで追加できます`)
       return
@@ -262,9 +262,9 @@ export function ProjectDetailClient({ project: initialProject, shareUrl: initial
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-gray-900 flex items-center gap-2">
                 <Film size={18} />
-                動画 ({project.videos.length}/5)
+                動画 ({project.videos.length}/10)
               </h2>
-              {project.videos.length < 5 && (
+              {project.videos.length < 10 && (
                 <Button
                   size="sm"
                   onClick={() => fileInputRef.current?.click()}
@@ -324,7 +324,7 @@ export function ProjectDetailClient({ project: initialProject, shareUrl: initial
               >
                 <Upload size={32} className="mx-auto mb-3 text-gray-400" />
                 <p className="text-sm font-medium text-gray-600">動画をアップロード</p>
-                <p className="text-xs text-gray-400 mt-1">MP4, MOV, WebM / 最大1GB / 最大5本</p>
+                <p className="text-xs text-gray-400 mt-1">MP4, MOV, WebM / 最大1GB / 最大10本</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -380,14 +380,14 @@ export function ProjectDetailClient({ project: initialProject, shareUrl: initial
                   </div>
                 ))}
 
-                {project.videos.length < 5 && uploadingFiles.length === 0 && (
+                {project.videos.length < 10 && uploadingFiles.length === 0 && (
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
                     className="w-full border-2 border-dashed border-gray-200 rounded-lg p-4 text-sm text-gray-400 hover:border-blue-400 hover:text-blue-500 transition-colors flex items-center justify-center gap-2"
                   >
                     <Upload size={14} />
-                    さらに追加 (あと{5 - project.videos.length}本)
+                    さらに追加 (あと{10 - project.videos.length}本)
                   </button>
                 )}
               </div>

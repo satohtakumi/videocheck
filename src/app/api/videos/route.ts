@@ -30,8 +30,8 @@ export async function POST(request: NextRequest) {
       .select('id', { count: 'exact' })
       .eq('project_id', project_id)
 
-    if ((count ?? 0) >= 5) {
-      return NextResponse.json({ error: '動画は最大5本まで登録できます' }, { status: 400 })
+    if ((count ?? 0) >= 10) {
+      return NextResponse.json({ error: '動画は最大10本まで登録できます' }, { status: 400 })
     }
 
     // Save video record
