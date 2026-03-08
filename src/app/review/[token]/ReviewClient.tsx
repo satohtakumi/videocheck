@@ -24,12 +24,8 @@ export function ReviewClient({ project, initialVideoIndex, token }: Props) {
 
   const [feedbacks, setFeedbacks] = useState<Feedback[]>(activeVideo?.feedbacks ?? [])
   const [videoStatus, setVideoStatus] = useState<VideoStatus>(activeVideo?.status ?? 'pending')
-  const [authorName, setAuthorName] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('vc_author') ?? ''
-    }
-    return ''
-  })
+  const [globalMemo, setGlobalMemo] = useState('')
+  const [submittingGlobalMemo, setSubmittingGlobalMemo] = useState(false)
   const [inputText, setInputText] = useState('')
   const [inputType, setInputType] = useState<FeedbackType>('correction')
   const [submitting, setSubmitting] = useState(false)
@@ -60,12 +56,6 @@ export function ReviewClient({ project, initialVideoIndex, token }: Props) {
     return () => window.removeEventListener('keydown', handler)
   }, [])
 
-  // Save author name
-  useEffect(() => {
-    if (typeof window !== 'undefined' && authorName) {
-      localStorage.setItem('vc_author', authorName)
-    }
-  }, [authorName])
 
   function handleTimeUpdate() {
     if (videoRef.current) setCurrentTime(videoRef.current.currentTime)
@@ -101,7 +91,7 @@ export function ReviewClient({ project, initialVideoIndex, token }: Props) {
         type: inputType,
         timestamp_seconds: currentTime,
         text: inputText.trim(),
-        author_name: authorName.trim() || null,
+        author_name: null,
       }),
     })
 
@@ -113,6 +103,28 @@ export function ReviewClient({ project, initialVideoIndex, token }: Props) {
       setInputText('')
     }
     setSubmitting(false)
+  }
+
+  async function handleSubmitGlobalMemo() {
+    if (!globalMemo.trim() || !activeVideo) return
+    setSubmittingGlobalMemo(true)
+    const res = await fetch('/api/feedbacks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        video_id: activeVideo.id,
+        type: 'memo' as FeedbackType,
+        timestamp_seconds: 0,
+        text: `【全体メモ】${globalMemo.trim()}`,
+        author_name: null,
+      }),
+    })
+    if (res.ok) {
+      const { feedback } = await res.json()
+      setFeedbacks(prev => [...prev, feedback].sort((a, b) => a.timestamp_seconds - b.timestamp_seconds))
+      setGlobalMemo('')
+    }
+    setSubmittingGlobalMemo(false)
   }
 
   async function handleDeleteFeedback(feedbackId: string) {
@@ -240,6 +252,10 @@ export function ReviewClient({ project, initialVideoIndex, token }: Props) {
                 onClick={() => {
                   videoRef.current?.paused ? videoRef.current?.play().catch(() => {}) : videoRef.current?.pause()
                 }}
+                playsInline
+                disablePictureInPicture
+                controlsList="nodownload noplaybackrate"
+                style={{ WebkitMediaControls: 'none' } as React.CSSProperties}
               />
             </div>
           ) : (
@@ -309,14 +325,27 @@ export function ReviewClient({ project, initialVideoIndex, token }: Props) {
         <div className="w-full lg:w-96 border-t lg:border-t-0 lg:border-l border-gray-800 bg-gray-900 flex flex-col max-h-screen lg:max-h-full overflow-hidden">
           {/* Input area */}
           <div className="p-4 border-b border-gray-800">
-            <div className="mb-3">
-              <input
-                type="text"
-                value={authorName}
-                onChange={e => setAuthorName(e.target.value)}
-                placeholder="お名前（任意）"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            {/* 全体メモ */}
+            <div className="mb-3 pb-3 border-b border-gray-700">
+              <p className="text-xs text-gray-400 mb-1.5 font-medium">全体メモ</p>
+              <textarea
+                value={globalMemo}
+                onChange={e => setGlobalMemo(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleSubmitGlobalMemo()
+                }}
+                placeholder="動画全体に対するメモを入力..."
+                rows={3}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
               />
+              <button
+                onClick={handleSubmitGlobalMemo}
+                disabled={submittingGlobalMemo || !globalMemo.trim()}
+                className="mt-1.5 w-full bg-gray-700 text-white rounded-lg py-1.5 text-xs font-medium hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1.5"
+              >
+                <Send size={11} />
+                {submittingGlobalMemo ? '送信中...' : '送信 (Ctrl+Enter)'}
+              </button>
             </div>
 
             {/* Type toggle */}

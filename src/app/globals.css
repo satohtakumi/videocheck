@@ -28,3 +28,8 @@ body {
   background: #cbd5e1;
   border-radius: 3px;
 }
+
+/* Hide native browser video controls */
+video::-webkit-media-controls { display: none !important; }
+video::-webkit-media-controls-enclosure { display: none !important; }
+video::-webkit-media-controls-panel { display: none !important; }

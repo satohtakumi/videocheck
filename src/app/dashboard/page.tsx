@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Plus, Film, Clock, CheckCircle, XCircle, ExternalLink } from 'lucide-react'
 import { PROJECT_STATUS_LABELS, PROJECT_STATUS_COLORS, VIDEO_STATUS_LABELS, VIDEO_STATUS_COLORS, formatDate } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
+import { CopyLinkButton } from '@/components/ui/CopyLinkButton'
 import type { Project, ProjectStatus, VideoStatus } from '@/types/database'
 
 type VideoRow = {
@@ -285,6 +286,7 @@ export default async function DashboardPage({
                     <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">期限</th>
                     <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">ステータス</th>
                     <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">更新日</th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">リンク</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -324,6 +326,9 @@ export default async function DashboardPage({
                         <Link href={`/dashboard/projects/${project.id}`} className="block px-6 py-4 text-sm text-gray-500">
                           {formatDate(project.updated_at)}
                         </Link>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <CopyLinkButton shareToken={project.share_token} />
                       </td>
                     </tr>
                   ))}

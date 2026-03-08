@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -29,9 +29,15 @@ interface UploadingFile {
   error: boolean
 }
 
-export function ProjectDetailClient({ project: initialProject, shareUrl }: Props) {
+export function ProjectDetailClient({ project: initialProject, shareUrl: initialShareUrl }: Props) {
   const router = useRouter()
   const [project, setProject] = useState(initialProject)
+  const [shareUrl, setShareUrl] = useState(initialShareUrl)
+
+  // ブラウザのオリジンを使って正確なURLを構築（NEXT_PUBLIC_APP_URL不要）
+  useEffect(() => {
+    setShareUrl(`${window.location.origin}/review/${initialProject.share_token}`)
+  }, [initialProject.share_token])
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([])
   const [uploadSuccess, setUploadSuccess] = useState(false)
   const [copied, setCopied] = useState(false)
