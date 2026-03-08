@@ -249,13 +249,13 @@ export function ReviewClient({ project, initialVideoIndex, token }: Props) {
                 onLoadedMetadata={handleLoadedMetadata}
                 onPlay={() => setPlaying(true)}
                 onPause={() => setPlaying(false)}
-                onClick={() => {
-                  videoRef.current?.paused ? videoRef.current?.play().catch(() => {}) : videoRef.current?.pause()
-                }}
                 playsInline
                 disablePictureInPicture
-                controlsList="nodownload noplaybackrate"
-                style={{ WebkitMediaControls: 'none' } as React.CSSProperties}
+              />
+              {/* ブラウザのネイティブ動画コントロールUIを全ブラウザで非表示にするオーバーレイ */}
+              <div
+                className="absolute inset-0 cursor-pointer"
+                onClick={() => videoRef.current?.paused ? videoRef.current?.play().catch(() => {}) : videoRef.current?.pause()}
               />
             </div>
           ) : (

@@ -212,7 +212,7 @@ export function FeedbackListClient({ project, projectId }: Props) {
           </div>
           <div className="flex flex-col lg:flex-row">
             {/* Video */}
-            <div className="flex-1 bg-black flex items-center justify-center" style={{ maxHeight: '360px' }}>
+            <div className="flex-1 bg-black flex items-center justify-center relative" style={{ maxHeight: '360px' }}>
               <video
                 ref={videoRef}
                 src={activeVideoObj.signed_url}
@@ -221,7 +221,13 @@ export function FeedbackListClient({ project, projectId }: Props) {
                 onLoadedMetadata={() => { if (videoRef.current) setDuration(videoRef.current.duration) }}
                 onPlay={() => setPlaying(true)}
                 onPause={() => setPlaying(false)}
-                onClick={() => { videoRef.current?.paused ? videoRef.current?.play().catch(() => {}) : videoRef.current?.pause() }}
+                playsInline
+                disablePictureInPicture
+              />
+              {/* ブラウザのネイティブ動画コントロールUIを全ブラウザで非表示にするオーバーレイ */}
+              <div
+                className="absolute inset-0 cursor-pointer"
+                onClick={() => videoRef.current?.paused ? videoRef.current?.play().catch(() => {}) : videoRef.current?.pause()}
               />
             </div>
 
