@@ -306,7 +306,7 @@ export default async function DashboardPage({
                         <Link href={`/dashboard/projects/${project.id}`} className="block px-6 py-4 text-sm text-gray-500">
                           <div className="flex items-center gap-1">
                             <Film size={14} />
-                            {project.videos?.length ?? 0} / 5
+                            {project.videos?.length ?? 0} / 10
                           </div>
                         </Link>
                       </td>
